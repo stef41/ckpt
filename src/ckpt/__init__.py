@@ -34,7 +34,7 @@ from ckpt.merge import find_lora_pairs, merge_lora_state_dicts
 from ckpt.stats import CheckpointStats, TensorStats, stats_from_info
 from ckpt.validate import ValidationIssue, ValidationResult, validate
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 __all__ = [
     "__version__",
