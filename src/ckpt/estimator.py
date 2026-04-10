@@ -4,14 +4,12 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional
 
-from ckpt._types import CheckpointInfo, DType, DTYPE_SIZES, TensorInfo
+from ckpt._types import DTYPE_SIZES, CheckpointInfo
 from ckpt.inspect import format_size
 
-
 # Bytes per element — extends DTYPE_SIZES with sub-byte and string aliases
-_DTYPE_BYTES: Dict[str, float] = {
+_DTYPE_BYTES: dict[str, float] = {
     "float32": 4, "fp32": 4, "f32": 4,
     "float16": 2, "fp16": 2, "f16": 2,
     "bfloat16": 2, "bf16": 2,
@@ -63,7 +61,7 @@ class EstimationResult:
     original_size: int
     estimated_size: int
     target_dtype: str
-    per_tensor: List[TensorEstimate] = field(default_factory=list)
+    per_tensor: list[TensorEstimate] = field(default_factory=list)
 
     @property
     def reduction_bytes(self) -> int:
@@ -94,7 +92,7 @@ def estimate_reduction(
     EstimationResult
     """
     target_bpe = _bytes_per_element(target_dtype)
-    per_tensor: List[TensorEstimate] = []
+    per_tensor: list[TensorEstimate] = []
     total_original = 0
     total_estimated = 0
 
@@ -175,7 +173,7 @@ def estimate_quantized_size(
 
 def format_estimation(result: EstimationResult) -> str:
     """Format an :class:`EstimationResult` as human-readable text."""
-    lines: List[str] = []
+    lines: list[str] = []
     lines.append(f"Target dtype: {result.target_dtype}")
     lines.append(f"Original size: {format_size(result.original_size)}")
     lines.append(f"Estimated size: {format_size(result.estimated_size)}")

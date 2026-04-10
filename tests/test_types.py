@@ -3,13 +3,13 @@
 import pytest
 
 from ckpt._types import (
+    DTYPE_SIZES,
     CheckpointFormat,
     CheckpointInfo,
     CkptError,
-    DType,
-    DTYPE_SIZES,
     DiffEntry,
     DiffResult,
+    DType,
     FormatError,
     MergeConfig,
     MergeError,

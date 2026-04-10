@@ -9,13 +9,10 @@ import pytest
 from ckpt._types import CheckpointFormat, CheckpointInfo, DType, TensorInfo
 from ckpt.estimator import (
     EstimationResult,
-    QuantEstimationResult,
-    TensorEstimate,
     estimate_quantized_size,
     estimate_reduction,
     format_estimation,
 )
-
 
 # ---------------------------------------------------------------------------
 # Helpers

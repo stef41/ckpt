@@ -6,9 +6,8 @@ import json
 import struct
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Union
 
-from ckpt._types import CheckpointFormat, CkptError, FormatError, DTYPE_SIZES, DType
+from ckpt._types import CheckpointFormat
 from ckpt.inspect import detect_format
 
 
@@ -26,11 +25,11 @@ class ValidationResult:
 
     path: str
     valid: bool
-    issues: List[ValidationIssue]
+    issues: list[ValidationIssue]
     format: CheckpointFormat
 
 
-def validate_safetensors(path: Union[str, Path]) -> ValidationResult:
+def validate_safetensors(path: str | Path) -> ValidationResult:
     """Validate a SafeTensors file for integrity.
 
     Checks:
@@ -120,7 +119,7 @@ def validate_safetensors(path: Union[str, Path]) -> ValidationResult:
     return ValidationResult(str(path), not has_errors, issues, CheckpointFormat.SAFETENSORS)
 
 
-def validate(path: Union[str, Path]) -> ValidationResult:
+def validate(path: str | Path) -> ValidationResult:
     """Auto-detect format and validate a checkpoint."""
     path = Path(path)
     if not path.exists():

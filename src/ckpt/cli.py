@@ -3,8 +3,6 @@
 from __future__ import annotations
 
 import sys
-from pathlib import Path
-from typing import Optional
 
 try:
     import click
@@ -26,9 +24,9 @@ def _build_cli():  # type: ignore[no-untyped-def]
     if not _HAS_CLICK:
         return None
 
-    from ckpt.inspect import inspect, format_size, format_params
     from ckpt.diff import diff, format_diff
-    from ckpt.stats import stats_from_info, format_stats
+    from ckpt.inspect import format_params, format_size, inspect
+    from ckpt.stats import format_stats, stats_from_info
     from ckpt.validate import validate
 
     @click.group()

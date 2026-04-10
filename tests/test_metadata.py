@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import json
-
 import pytest
 
 from ckpt.metadata import (
@@ -12,7 +10,6 @@ from ckpt.metadata import (
     extract_metadata_from_path,
     format_metadata_report,
 )
-
 
 # ------------------------------------------------------------------
 # CheckpointMetadata dataclass

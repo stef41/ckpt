@@ -2,16 +2,15 @@
 
 from __future__ import annotations
 
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
-from ckpt._types import CkptError, MergeConfig, MergeError
+from ckpt._types import MergeError
 
 
 def _find_lora_pairs(
     base_keys: set[str],
     adapter_keys: set[str],
-) -> List[Dict[str, str]]:
+) -> list[dict[str, str]]:
     """Find matching LoRA A/B pairs and their base weight names.
 
     LoRA adapters typically have keys like:
@@ -50,7 +49,7 @@ def _find_lora_pairs(
     return pairs
 
 
-def _get_scaling(adapter_keys: set[str], adapter_state: Dict[str, Any]) -> float:
+def _get_scaling(adapter_keys: set[str], adapter_state: dict[str, Any]) -> float:
     """Try to extract LoRA scaling factor from adapter config or default to 1.0."""
     # Common pattern: lora_alpha / lora_r
     # If adapter_config.json was loaded, scaling = alpha / r
@@ -59,10 +58,10 @@ def _get_scaling(adapter_keys: set[str], adapter_state: Dict[str, Any]) -> float
 
 
 def merge_lora_state_dicts(
-    base_state: Dict[str, Any],
-    adapter_state: Dict[str, Any],
+    base_state: dict[str, Any],
+    adapter_state: dict[str, Any],
     alpha: float = 1.0,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Merge LoRA adapter weights into base model state dict.
 
     Performs: base_weight += alpha * (lora_B @ lora_A)
@@ -112,6 +111,6 @@ def merge_lora_state_dicts(
 def find_lora_pairs(
     base_keys: set[str],
     adapter_keys: set[str],
-) -> List[Dict[str, str]]:
+) -> list[dict[str, str]]:
     """Public interface for finding LoRA pairs."""
     return _find_lora_pairs(base_keys, adapter_keys)

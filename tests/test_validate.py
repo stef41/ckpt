@@ -3,8 +3,6 @@
 import json
 import struct
 
-import pytest
-
 from ckpt._types import CheckpointFormat
 from ckpt.validate import validate, validate_safetensors
 

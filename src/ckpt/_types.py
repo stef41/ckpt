@@ -2,10 +2,9 @@
 
 from __future__ import annotations
 
-import struct
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 class CheckpointFormat(str, Enum):
@@ -34,7 +33,7 @@ class DType(str, Enum):
 
 
 # Bytes per element for each dtype
-DTYPE_SIZES: Dict[DType, int] = {
+DTYPE_SIZES: dict[DType, int] = {
     DType.F32: 4, DType.F16: 2, DType.BF16: 2, DType.F64: 8,
     DType.I64: 8, DType.I32: 4, DType.I16: 2, DType.I8: 1,
     DType.U8: 1, DType.BOOL: 1,
@@ -46,7 +45,7 @@ class TensorInfo:
     """Metadata for a single tensor in a checkpoint."""
 
     name: str
-    shape: List[int]
+    shape: list[int]
     dtype: DType
     offset_start: int = 0
     offset_end: int = 0
@@ -76,8 +75,8 @@ class CheckpointInfo:
     path: str
     format: CheckpointFormat
     file_size: int
-    tensors: List[TensorInfo]
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    tensors: list[TensorInfo]
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     @property
     def n_tensors(self) -> int:
@@ -91,17 +90,17 @@ class CheckpointInfo:
     def total_bytes(self) -> int:
         return sum(t.size_bytes for t in self.tensors)
 
-    def dtype_summary(self) -> Dict[str, int]:
+    def dtype_summary(self) -> dict[str, int]:
         """Count parameters per dtype."""
-        counts: Dict[str, int] = {}
+        counts: dict[str, int] = {}
         for t in self.tensors:
             key = t.dtype.value
             counts[key] = counts.get(key, 0) + t.numel
         return counts
 
-    def layer_groups(self) -> Dict[str, List[TensorInfo]]:
+    def layer_groups(self) -> dict[str, list[TensorInfo]]:
         """Group tensors by layer prefix (e.g., 'model.layers.0')."""
-        groups: Dict[str, List[TensorInfo]] = {}
+        groups: dict[str, list[TensorInfo]] = {}
         for t in self.tensors:
             parts = t.name.split(".")
             # Take first 3 parts as group key, or full name if shorter
@@ -125,7 +124,7 @@ class DiffResult:
 
     path_a: str
     path_b: str
-    entries: List[DiffEntry]
+    entries: list[DiffEntry]
     n_shared: int = 0
     n_identical: int = 0
 

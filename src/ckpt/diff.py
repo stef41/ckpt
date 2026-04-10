@@ -3,13 +3,11 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import List, Union
 
 from ckpt._types import (
     CheckpointInfo,
     DiffEntry,
     DiffResult,
-    TensorInfo,
 )
 from ckpt.inspect import inspect
 
@@ -87,8 +85,8 @@ def diff_infos(info_a: CheckpointInfo, info_b: CheckpointInfo) -> DiffResult:
 
 
 def diff(
-    path_a: Union[str, Path],
-    path_b: Union[str, Path],
+    path_a: str | Path,
+    path_b: str | Path,
 ) -> DiffResult:
     """Diff two checkpoint files."""
     info_a = inspect(path_a)
@@ -99,10 +97,10 @@ def diff(
 def format_diff(result: DiffResult) -> str:
     """Format a DiffResult as a human-readable string."""
     lines: list[str] = []
-    lines.append(f"Comparing:")
+    lines.append("Comparing:")
     lines.append(f"  A: {result.path_a}")
     lines.append(f"  B: {result.path_b}")
-    lines.append(f"")
+    lines.append("")
     lines.append(f"Shared tensors: {result.n_shared}")
     lines.append(f"Identical: {result.n_identical}")
     lines.append(f"Changes: {result.n_changes}")

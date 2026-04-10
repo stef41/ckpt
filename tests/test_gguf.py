@@ -3,12 +3,11 @@
 from __future__ import annotations
 
 import struct
-import tempfile
 from pathlib import Path
 
 import pytest
 
-from ckpt._types import CheckpointFormat, DType, FormatError
+from ckpt._types import DType, FormatError
 from ckpt.gguf import (
     GGUFInfo,
     GGUFTensorEntry,

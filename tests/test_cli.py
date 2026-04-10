@@ -2,6 +2,7 @@
 
 import json
 import struct
+
 import pytest
 
 try:

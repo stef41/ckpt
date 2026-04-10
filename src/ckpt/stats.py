@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 import math
+from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Sequence
 
-from ckpt._types import CheckpointInfo, TensorInfo
+from ckpt._types import CheckpointInfo
 
 
 @dataclass
@@ -14,17 +14,17 @@ class TensorStats:
     """Statistics for a single tensor."""
 
     name: str
-    shape: List[int]
+    shape: list[int]
     numel: int
     size_bytes: int
     dtype: str
     # Value stats (only if tensor data is available)
-    mean: Optional[float] = None
-    std: Optional[float] = None
-    min_val: Optional[float] = None
-    max_val: Optional[float] = None
-    sparsity: Optional[float] = None  # fraction of zeros
-    abs_mean: Optional[float] = None
+    mean: float | None = None
+    std: float | None = None
+    min_val: float | None = None
+    max_val: float | None = None
+    sparsity: float | None = None  # fraction of zeros
+    abs_mean: float | None = None
 
 
 @dataclass
@@ -35,9 +35,9 @@ class CheckpointStats:
     n_tensors: int
     n_parameters: int
     total_bytes: int
-    dtype_counts: Dict[str, int]
-    layer_groups: Dict[str, int]  # group -> n_params
-    tensor_stats: List[TensorStats]
+    dtype_counts: dict[str, int]
+    layer_groups: dict[str, int]  # group -> n_params
+    tensor_stats: list[TensorStats]
 
     @property
     def total_size_human(self) -> str:
@@ -52,7 +52,7 @@ class CheckpointStats:
 def compute_tensor_stats(
     name: str,
     values: Sequence[float],
-    shape: List[int],
+    shape: list[int],
     dtype: str,
     size_bytes: int,
 ) -> TensorStats:
@@ -87,7 +87,7 @@ def compute_tensor_stats(
 
 def stats_from_info(info: CheckpointInfo) -> CheckpointStats:
     """Compute structural stats from CheckpointInfo (no values needed)."""
-    layer_groups: Dict[str, int] = {}
+    layer_groups: dict[str, int] = {}
     for group_name, tensors in info.layer_groups().items():
         layer_groups[group_name] = sum(t.numel for t in tensors)
 

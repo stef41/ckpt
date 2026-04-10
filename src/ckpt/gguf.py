@@ -5,7 +5,7 @@ from __future__ import annotations
 import struct
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any
 
 from ckpt._types import CheckpointFormat, CheckpointInfo, DType, FormatError, TensorInfo
 
@@ -25,7 +25,7 @@ _GGUF_TYPE_INT64 = 11
 _GGUF_TYPE_FLOAT64 = 12
 
 # GGUF tensor dtype mapping (ggml_type enum)
-_GGUF_TENSOR_DTYPE: Dict[int, str] = {
+_GGUF_TENSOR_DTYPE: dict[int, str] = {
     0: "F32",
     1: "F16",
     2: "Q4_0",
@@ -58,7 +58,7 @@ _GGUF_TENSOR_DTYPE: Dict[int, str] = {
 }
 
 # Map GGUF tensor dtypes to ckpt DType where applicable
-_GGUF_TO_CKPT_DTYPE: Dict[str, DType] = {
+_GGUF_TO_CKPT_DTYPE: dict[str, DType] = {
     "F32": DType.F32,
     "F16": DType.F16,
     "BF16": DType.BF16,
@@ -77,7 +77,7 @@ class GGUFTensorEntry:
     """Parsed tensor info from a GGUF file."""
 
     name: str
-    shape: List[int]
+    shape: list[int]
     dtype: str
     offset: int
 
@@ -88,8 +88,8 @@ class GGUFInfo:
 
     version: int
     tensor_count: int
-    metadata: Dict[str, Any] = field(default_factory=dict)
-    tensors: List[GGUFTensorEntry] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
+    tensors: list[GGUFTensorEntry] = field(default_factory=list)
 
 
 class _GGUFReader:
@@ -217,7 +217,7 @@ class _GGUFReader:
         return self._pos
 
 
-def _parse_header(reader: _GGUFReader) -> Tuple[int, int, int]:
+def _parse_header(reader: _GGUFReader) -> tuple[int, int, int]:
     """Parse GGUF magic, version, tensor_count, metadata_kv_count."""
     magic = reader.read_bytes(4)
     if magic != GGUF_MAGIC:
@@ -232,7 +232,7 @@ def _parse_header(reader: _GGUFReader) -> Tuple[int, int, int]:
     return version, tensor_count, metadata_kv_count
 
 
-def parse_gguf(path: Union[str, Path]) -> GGUFInfo:
+def parse_gguf(path: str | Path) -> GGUFInfo:
     """Parse a GGUF file header and return structured info.
 
     Reads the magic bytes, version, metadata key-value pairs,
@@ -252,7 +252,7 @@ def parse_gguf_bytes(data: bytes) -> GGUFInfo:
     version, tensor_count, kv_count = _parse_header(reader)
 
     # Read metadata key-value pairs
-    metadata: Dict[str, Any] = {}
+    metadata: dict[str, Any] = {}
     for _ in range(kv_count):
         key = reader.read_string()
         value_type = reader.read_uint32()
@@ -260,7 +260,7 @@ def parse_gguf_bytes(data: bytes) -> GGUFInfo:
         metadata[key] = value
 
     # Read tensor info entries
-    tensors: List[GGUFTensorEntry] = []
+    tensors: list[GGUFTensorEntry] = []
     for _ in range(tensor_count):
         name = reader.read_string()
         n_dims = reader.read_uint32()
@@ -283,13 +283,13 @@ def parse_gguf_bytes(data: bytes) -> GGUFInfo:
     )
 
 
-def inspect_gguf(path: Union[str, Path]) -> CheckpointInfo:
+def inspect_gguf(path: str | Path) -> CheckpointInfo:
     """Inspect a GGUF file and return a standard CheckpointInfo."""
     path = Path(path)
     file_size = path.stat().st_size
     info = parse_gguf(path)
 
-    tensors: List[TensorInfo] = []
+    tensors: list[TensorInfo] = []
     for t in info.tensors:
         dtype = _GGUF_TO_CKPT_DTYPE.get(t.dtype, DType.UNKNOWN)
         tensors.append(TensorInfo(
@@ -310,7 +310,7 @@ def inspect_gguf(path: Union[str, Path]) -> CheckpointInfo:
 
 def format_gguf_info(info: GGUFInfo) -> str:
     """Format GGUFInfo as a human-readable summary string."""
-    lines: List[str] = []
+    lines: list[str] = []
     lines.append(f"GGUF v{info.version}")
     lines.append(f"Tensors: {info.tensor_count}")
 
@@ -323,7 +323,7 @@ def format_gguf_info(info: GGUFInfo) -> str:
 
     if info.tensors:
         # Summarise dtypes
-        dtype_counts: Dict[str, int] = {}
+        dtype_counts: dict[str, int] = {}
         total_elements = 0
         for t in info.tensors:
             dtype_counts[t.dtype] = dtype_counts.get(t.dtype, 0) + 1

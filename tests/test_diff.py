@@ -1,7 +1,5 @@
 """Tests for ckpt.diff."""
 
-import json
-import struct
 
 from ckpt._types import (
     CheckpointFormat,

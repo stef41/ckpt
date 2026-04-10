@@ -5,27 +5,25 @@ from __future__ import annotations
 import json
 import struct
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 from ckpt._types import (
     CheckpointFormat,
     CheckpointInfo,
-    CkptError,
     DType,
     FormatError,
     TensorInfo,
 )
 
-
 # SafeTensors dtype mapping
-_ST_DTYPE_MAP: Dict[str, DType] = {
+_ST_DTYPE_MAP: dict[str, DType] = {
     "F32": DType.F32, "F16": DType.F16, "BF16": DType.BF16, "F64": DType.F64,
     "I64": DType.I64, "I32": DType.I32, "I16": DType.I16, "I8": DType.I8,
     "U8": DType.U8, "BOOL": DType.BOOL,
 }
 
 
-def detect_format(path: Union[str, Path]) -> CheckpointFormat:
+def detect_format(path: str | Path) -> CheckpointFormat:
     """Detect checkpoint format from file extension and magic bytes."""
     path = Path(path)
     suffix = path.suffix.lower()
@@ -52,7 +50,7 @@ def detect_format(path: Union[str, Path]) -> CheckpointFormat:
     return CheckpointFormat.UNKNOWN
 
 
-def inspect_safetensors(path: Union[str, Path]) -> CheckpointInfo:
+def inspect_safetensors(path: str | Path) -> CheckpointInfo:
     """Parse a SafeTensors file header without loading tensor data.
 
     SafeTensors format:
@@ -80,7 +78,7 @@ def inspect_safetensors(path: Union[str, Path]) -> CheckpointInfo:
         raise FormatError(f"Invalid SafeTensors header JSON: {e}") from e
 
     # Extract metadata (stored under __metadata__ key)
-    metadata: Dict[str, Any] = {}
+    metadata: dict[str, Any] = {}
     if "__metadata__" in header:
         metadata = header.pop("__metadata__")
 
@@ -108,7 +106,7 @@ def inspect_safetensors(path: Union[str, Path]) -> CheckpointInfo:
     )
 
 
-def inspect_pytorch(path: Union[str, Path]) -> CheckpointInfo:
+def inspect_pytorch(path: str | Path) -> CheckpointInfo:
     """Inspect a PyTorch checkpoint (.bin/.pt/.pth).
 
     Requires torch to be installed. Falls back to basic file info if not available.
@@ -160,7 +158,7 @@ def inspect_pytorch(path: Union[str, Path]) -> CheckpointInfo:
     )
 
 
-def inspect(path: Union[str, Path]) -> CheckpointInfo:
+def inspect(path: str | Path) -> CheckpointInfo:
     """Auto-detect format and inspect a checkpoint file."""
     path = Path(path)
     if not path.exists():

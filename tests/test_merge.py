@@ -1,7 +1,7 @@
 """Tests for ckpt.merge."""
 
-import pytest
 import numpy as np  # Using numpy arrays as tensor stand-ins
+import pytest
 
 from ckpt._types import MergeError
 from ckpt.merge import find_lora_pairs, merge_lora_state_dicts

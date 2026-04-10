@@ -1,8 +1,6 @@
 """Tests for ckpt.convert."""
 
-import json
 import os
-import tempfile
 from pathlib import Path
 
 import pytest
@@ -13,12 +11,7 @@ from ckpt.convert import (
     ConversionResult,
     FormatConverter,
     convert_checkpoint,
-    _serialize_safetensors,
-    _deserialize_safetensors,
-    _serialize_pytorch,
-    _deserialize_pytorch,
 )
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -125,7 +118,7 @@ class TestConversionResult:
 class TestRoundTrip:
     @pytest.mark.parametrize("fmt", list(ConversionFormat.ALL))
     def test_round_trip(self, fmt):
-        from ckpt.convert import _SERIALIZERS, _DESERIALIZERS
+        from ckpt.convert import _DESERIALIZERS, _SERIALIZERS
 
         tensors = _dummy_tensors()
         blob = _SERIALIZERS[fmt](tensors)
@@ -208,7 +201,7 @@ class TestFormatConverter:
         }
         src = _write_source(tmp_path, ConversionFormat.SAFETENSORS, tensors)
         tgt = tmp_path / "out" / "model.pt"
-        cfg = ConversionConfig(
+        ConversionConfig(
             source_format="safetensors",
             target_format="pytorch",
             shard_size_mb=0,  # force per-tensor shards via limit=0

@@ -2,8 +2,6 @@
 
 from ckpt._types import CheckpointFormat, CheckpointInfo, DType, TensorInfo
 from ckpt.stats import (
-    CheckpointStats,
-    TensorStats,
     compute_tensor_stats,
     format_stats,
     stats_from_info,

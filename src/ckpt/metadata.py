@@ -4,23 +4,23 @@ from __future__ import annotations
 
 import json
 import re
-from dataclasses import dataclass, field, fields, asdict
-from datetime import datetime, timezone
-from typing import Any, Optional
+from dataclasses import asdict, dataclass, field, fields
+from datetime import datetime
+from typing import Any
 
 
 @dataclass
 class CheckpointMetadata:
     """Structured metadata for a model checkpoint."""
 
-    model_name: Optional[str] = None
-    framework: Optional[str] = None
-    epoch: Optional[int] = None
-    step: Optional[int] = None
-    loss: Optional[float] = None
-    learning_rate: Optional[float] = None
+    model_name: str | None = None
+    framework: str | None = None
+    epoch: int | None = None
+    step: int | None = None
+    loss: float | None = None
+    learning_rate: float | None = None
     custom: dict[str, Any] = field(default_factory=dict)
-    created_at: Optional[str] = None
+    created_at: str | None = None
 
 
 class MetadataEditor:

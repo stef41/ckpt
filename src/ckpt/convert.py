@@ -3,11 +3,10 @@
 from __future__ import annotations
 
 import json
-import os
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 
 class ConversionFormat:
@@ -20,7 +19,7 @@ class ConversionFormat:
 
     ALL = (SAFETENSORS, PYTORCH, NUMPY, GGUF)
 
-    _EXTENSIONS: Dict[str, str] = {
+    _EXTENSIONS: dict[str, str] = {
         ".safetensors": SAFETENSORS,
         ".pt": PYTORCH,
         ".pth": PYTORCH,
@@ -37,8 +36,8 @@ class ConversionConfig:
 
     source_format: str
     target_format: str
-    dtype: Optional[str] = None
-    shard_size_mb: Optional[int] = None
+    dtype: str | None = None
+    shard_size_mb: int | None = None
 
     def __post_init__(self) -> None:
         if self.source_format not in ConversionFormat.ALL:
@@ -64,7 +63,7 @@ class ConversionResult:
     source_size: int
     target_size: int
     duration_s: float
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     @property
     def compression_ratio(self) -> float:
@@ -83,12 +82,12 @@ class ConversionResult:
 # Internal serialisers / deserialisers operating on plain dicts
 # ---------------------------------------------------------------------------
 
-def _serialize_safetensors(tensors: Dict[str, Dict[str, Any]]) -> bytes:
+def _serialize_safetensors(tensors: dict[str, dict[str, Any]]) -> bytes:
     """Produce a minimal safetensors-like binary blob from *tensors*.
 
     Each value in *tensors* is ``{"dtype": str, "shape": list, "data": bytes}``.
     """
-    header: Dict[str, Any] = {}
+    header: dict[str, Any] = {}
     data_parts: list[bytes] = []
     offset = 0
     for name, info in tensors.items():
@@ -105,11 +104,11 @@ def _serialize_safetensors(tensors: Dict[str, Dict[str, Any]]) -> bytes:
     return header_len + header_bytes + b"".join(data_parts)
 
 
-def _deserialize_safetensors(blob: bytes) -> Dict[str, Dict[str, Any]]:
+def _deserialize_safetensors(blob: bytes) -> dict[str, dict[str, Any]]:
     header_len = int.from_bytes(blob[:8], "little")
     header = json.loads(blob[8: 8 + header_len])
     data_start = 8 + header_len
-    result: Dict[str, Dict[str, Any]] = {}
+    result: dict[str, dict[str, Any]] = {}
     for name, meta in header.items():
         if name == "__metadata__":
             continue
@@ -122,11 +121,11 @@ def _deserialize_safetensors(blob: bytes) -> Dict[str, Dict[str, Any]]:
     return result
 
 
-def _serialize_pytorch(tensors: Dict[str, Dict[str, Any]]) -> bytes:
+def _serialize_pytorch(tensors: dict[str, dict[str, Any]]) -> bytes:
     """Produce a simple JSON-based blob mimicking a PyTorch state dict."""
     import base64
 
-    payload: Dict[str, Any] = {}
+    payload: dict[str, Any] = {}
     for name, info in tensors.items():
         payload[name] = {
             "dtype": info["dtype"],
@@ -136,11 +135,11 @@ def _serialize_pytorch(tensors: Dict[str, Dict[str, Any]]) -> bytes:
     return json.dumps(payload).encode()
 
 
-def _deserialize_pytorch(blob: bytes) -> Dict[str, Dict[str, Any]]:
+def _deserialize_pytorch(blob: bytes) -> dict[str, dict[str, Any]]:
     import base64
 
     payload = json.loads(blob)
-    result: Dict[str, Dict[str, Any]] = {}
+    result: dict[str, dict[str, Any]] = {}
     for name, info in payload.items():
         result[name] = {
             "dtype": info["dtype"],
@@ -150,10 +149,10 @@ def _deserialize_pytorch(blob: bytes) -> Dict[str, Dict[str, Any]]:
     return result
 
 
-def _serialize_numpy(tensors: Dict[str, Dict[str, Any]]) -> bytes:
+def _serialize_numpy(tensors: dict[str, dict[str, Any]]) -> bytes:
     import base64
 
-    payload: Dict[str, Any] = {}
+    payload: dict[str, Any] = {}
     for name, info in tensors.items():
         payload[name] = {
             "dtype": info["dtype"],
@@ -165,12 +164,12 @@ def _serialize_numpy(tensors: Dict[str, Dict[str, Any]]) -> bytes:
     return len(header).to_bytes(8, "little") + header
 
 
-def _deserialize_numpy(blob: bytes) -> Dict[str, Dict[str, Any]]:
+def _deserialize_numpy(blob: bytes) -> dict[str, dict[str, Any]]:
     import base64
 
     header_len = int.from_bytes(blob[:8], "little")
     payload = json.loads(blob[8: 8 + header_len])
-    result: Dict[str, Dict[str, Any]] = {}
+    result: dict[str, dict[str, Any]] = {}
     for name, info in payload.items():
         result[name] = {
             "dtype": info["dtype"],
@@ -180,7 +179,7 @@ def _deserialize_numpy(blob: bytes) -> Dict[str, Dict[str, Any]]:
     return result
 
 
-def _serialize_gguf(tensors: Dict[str, Dict[str, Any]]) -> bytes:
+def _serialize_gguf(tensors: dict[str, dict[str, Any]]) -> bytes:
     """Minimal GGUF-like serialisation."""
     import base64
 
@@ -198,11 +197,11 @@ def _serialize_gguf(tensors: Dict[str, Dict[str, Any]]) -> bytes:
     return json.dumps(payload).encode()
 
 
-def _deserialize_gguf(blob: bytes) -> Dict[str, Dict[str, Any]]:
+def _deserialize_gguf(blob: bytes) -> dict[str, dict[str, Any]]:
     import base64
 
     payload = json.loads(blob)
-    result: Dict[str, Dict[str, Any]] = {}
+    result: dict[str, dict[str, Any]] = {}
     inner = payload.get("tensors", payload)
     for name, info in inner.items():
         result[name] = {
@@ -312,9 +311,9 @@ class FormatConverter:
         return fmt
 
     @staticmethod
-    def supported_conversions() -> List[Tuple[str, str]]:
+    def supported_conversions() -> list[tuple[str, str]]:
         """Return all supported (source, target) format pairs."""
-        pairs: List[Tuple[str, str]] = []
+        pairs: list[tuple[str, str]] = []
         for src in ConversionFormat.ALL:
             for tgt in ConversionFormat.ALL:
                 if src != tgt:
@@ -325,12 +324,12 @@ class FormatConverter:
 
     @staticmethod
     def _shard(
-        tensors: Dict[str, Dict[str, Any]],
+        tensors: dict[str, dict[str, Any]],
         shard_size_mb: int,
-    ) -> List[Dict[str, Dict[str, Any]]]:
+    ) -> list[dict[str, dict[str, Any]]]:
         limit = shard_size_mb * 1024 * 1024
-        shards: List[Dict[str, Dict[str, Any]]] = []
-        current: Dict[str, Dict[str, Any]] = {}
+        shards: list[dict[str, dict[str, Any]]] = []
+        current: dict[str, dict[str, Any]] = {}
         current_size = 0
         for name, info in tensors.items():
             tensor_size = len(info["data"])
@@ -352,7 +351,7 @@ class FormatConverter:
 def convert_checkpoint(
     source: str,
     target: str,
-    config: Optional[ConversionConfig] = None,
+    config: ConversionConfig | None = None,
 ) -> ConversionResult:
     """High-level convenience: detect formats from extensions and convert.
 
