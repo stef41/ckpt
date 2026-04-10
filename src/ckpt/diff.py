@@ -115,3 +115,121 @@ def format_diff(result: DiffResult) -> str:
             lines.append(f"  [{s}] {entry.tensor_name}: {entry.change_type} ({entry.details})")
 
     return "\n".join(lines)
+
+
+# ANSI escape codes
+_GREEN = "\033[32m"
+_RED = "\033[31m"
+_YELLOW = "\033[33m"
+_BOLD = "\033[1m"
+_RESET = "\033[0m"
+
+_SYMBOL_MAP = {
+    "added": ("+", _GREEN),
+    "removed": ("-", _RED),
+    "shape_changed": ("~", _YELLOW),
+    "dtype_changed": ("~", _YELLOW),
+    "values_changed": ("≠", _YELLOW),
+}
+
+
+def format_diff_rich(result: DiffResult) -> str:
+    """Format a DiffResult with ANSI color codes for terminal display.
+
+    - Added tensors: green with ``+`` prefix
+    - Removed tensors: red with ``-`` prefix
+    - Shape/dtype changes: yellow with ``~`` prefix
+    """
+    lines: list[str] = []
+    lines.append(f"{_BOLD}Comparing:{_RESET}")
+    lines.append(f"  A: {result.path_a}")
+    lines.append(f"  B: {result.path_b}")
+    lines.append("")
+    lines.append(f"Shared tensors: {result.n_shared}")
+    lines.append(f"Identical: {result.n_identical}")
+    lines.append(f"Changes: {result.n_changes}")
+
+    if result.entries:
+        lines.append("")
+        for entry in result.entries:
+            symbol, color = _SYMBOL_MAP.get(entry.change_type, ("?", ""))
+            lines.append(
+                f"  {color}{symbol} {entry.tensor_name}: "
+                f"{entry.change_type} ({entry.details}){_RESET}"
+            )
+
+    # Summary line
+    added = sum(1 for e in result.entries if e.change_type == "added")
+    removed = sum(1 for e in result.entries if e.change_type == "removed")
+    changed = sum(1 for e in result.entries if e.change_type not in ("added", "removed"))
+    lines.append("")
+    lines.append(
+        f"{_BOLD}Summary:{_RESET} "
+        f"{_GREEN}+{added} added{_RESET}, "
+        f"{_RED}-{removed} removed{_RESET}, "
+        f"{_YELLOW}~{changed} changed{_RESET}"
+    )
+    return "\n".join(lines)
+
+
+def format_diff_table(result: DiffResult) -> str:
+    """Format a DiffResult as a plain-text table.
+
+    Columns: Status | Tensor | Shape A | Shape B | Dtype
+    """
+    symbol_map = {
+        "added": "added",
+        "removed": "removed",
+        "shape_changed": "shape_changed",
+        "dtype_changed": "dtype_changed",
+        "values_changed": "values_changed",
+    }
+
+    rows: list[tuple[str, str, str, str, str]] = []
+    for entry in result.entries:
+        status = symbol_map.get(entry.change_type, entry.change_type)
+        shape_a = ""
+        shape_b = ""
+        dtype = ""
+
+        if entry.change_type == "added":
+            # details: "shape=... dtype=..."
+            parts = entry.details.split(" dtype=")
+            if len(parts) == 2:
+                shape_b = parts[0].replace("shape=", "")
+                dtype = parts[1]
+        elif entry.change_type == "removed":
+            parts = entry.details.split(" dtype=")
+            if len(parts) == 2:
+                shape_a = parts[0].replace("shape=", "")
+                dtype = parts[1]
+        elif entry.change_type == "shape_changed":
+            # details: "AxB → CxD"
+            halves = entry.details.split(" → ")
+            if len(halves) == 2:
+                shape_a = halves[0]
+                shape_b = halves[1]
+        elif entry.change_type == "dtype_changed":
+            # details: "F32 → F16"
+            dtype = entry.details
+
+        rows.append((status, entry.tensor_name, shape_a, shape_b, dtype))
+
+    headers = ("Status", "Tensor", "Shape A", "Shape B", "Dtype")
+    # Compute column widths
+    col_widths = [len(h) for h in headers]
+    for row in rows:
+        for i, cell in enumerate(row):
+            col_widths[i] = max(col_widths[i], len(cell))
+
+    def _fmt_row(cells: tuple[str, ...]) -> str:
+        return "  ".join(cell.ljust(col_widths[i]) for i, cell in enumerate(cells))
+
+    lines: list[str] = []
+    header_line = _fmt_row(headers)
+    lines.append(header_line)
+    lines.append("-" * len(header_line))
+    for row in rows:
+        lines.append(_fmt_row(row))
+
+    return "\n".join(lines)

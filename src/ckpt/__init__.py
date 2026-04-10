@@ -13,7 +13,7 @@ from ckpt._types import (
     MergeError,
     TensorInfo,
 )
-from ckpt.diff import diff, diff_infos, format_diff
+from ckpt.diff import diff, diff_infos, format_diff, format_diff_rich, format_diff_table
 from ckpt.inspect import (
     detect_format,
     format_params,
@@ -51,6 +51,8 @@ __all__ = [
     "diff",
     "diff_infos",
     "format_diff",
+    "format_diff_rich",
+    "format_diff_table",
     # Merge
     "merge_lora_state_dicts",
     "find_lora_pairs",
