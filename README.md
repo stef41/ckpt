@@ -1,5 +1,9 @@
 # ckpt
 
+[![CI](https://github.com/stef41/ckpt/actions/workflows/ci.yml/badge.svg)](https://github.com/stef41/ckpt/actions/workflows/ci.yml)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
+
 **The missing Swiss Army knife for model checkpoints.**
 
 ckpt inspects, diffs, validates, and merges model checkpoints without loading them into GPU memory. Parse SafeTensors headers in milliseconds, compare checkpoints after fine-tuning, merge LoRA adapters, and validate file integrity — all from the command line or Python.
