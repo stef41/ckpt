@@ -1,0 +1,70 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ckpt"
+version = "0.1.0"
+description = "Inspect, convert, diff, and merge model checkpoints. The missing Swiss Army knife for ML weights."
+readme = "README.md"
+license = {text = "Apache-2.0"}
+requires-python = ">=3.9"
+authors = [{ name = "Zacharie Bhatti" }]
+keywords = [
+    "checkpoint",
+    "safetensors",
+    "pytorch",
+    "model-weights",
+    "lora",
+    "merge",
+    "diff",
+    "inspect",
+    "machine-learning",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Typing :: Typed",
+]
+dependencies = []
+
+[project.optional-dependencies]
+safetensors = ["safetensors>=0.4"]
+torch = ["torch>=2.0"]
+cli = ["click>=8.0", "rich>=13.0"]
+all = ["ckpt[safetensors,torch,cli]"]
+
+[project.scripts]
+ckpt = "ckpt.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/stef41/ckpt"
+Repository = "https://github.com/stef41/ckpt"
+Issues = "https://github.com/stef41/ckpt/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ckpt"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v --tb=short"
+
+[tool.ruff]
+target-version = "py39"
+line-length = 99
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "SIM"]
+
+[tool.mypy]
+python_version = "3.9"
+strict = true
