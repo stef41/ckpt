@@ -21,6 +21,14 @@ from ckpt.inspect import (
     inspect,
     inspect_safetensors,
 )
+from ckpt.estimator import (
+    EstimationResult,
+    QuantEstimationResult,
+    TensorEstimate,
+    estimate_quantized_size,
+    estimate_reduction,
+    format_estimation,
+)
 from ckpt.merge import find_lora_pairs, merge_lora_state_dicts
 from ckpt.stats import CheckpointStats, TensorStats, stats_from_info
 from ckpt.validate import ValidationIssue, ValidationResult, validate
@@ -64,4 +72,11 @@ __all__ = [
     "validate",
     "ValidationResult",
     "ValidationIssue",
+    # Estimator
+    "EstimationResult",
+    "QuantEstimationResult",
+    "TensorEstimate",
+    "estimate_reduction",
+    "estimate_quantized_size",
+    "format_estimation",
 ]
