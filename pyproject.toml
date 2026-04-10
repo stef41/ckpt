@@ -9,7 +9,7 @@ description = "Inspect, convert, diff, and merge model checkpoints. The missing 
 readme = "README.md"
 license = {text = "Apache-2.0"}
 requires-python = ">=3.9"
-authors = [{ name = "Zacharie Bhatti" }]
+authors = [{ name = "Zacharie B" }]
 keywords = [
     "checkpoint",
     "safetensors",
