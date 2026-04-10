@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import sys
+from typing import Any
 
 try:
     import click
@@ -20,7 +21,7 @@ except ImportError:
     _console = None  # type: ignore[assignment]
 
 
-def _build_cli():  # type: ignore[no-untyped-def]
+def _build_cli() -> Any:
     if not _HAS_CLICK:
         return None
 

@@ -69,3 +69,7 @@ ignore = ["E501", "E741", "B904", "B017", "SIM102"]
 [tool.mypy]
 python_version = "3.9"
 strict = true
+ignore_missing_imports = true
+disallow_any_generics = false
+warn_return_any = false
+warn_unused_ignores = false

@@ -26,7 +26,7 @@ class CheckpointMetadata:
 class MetadataEditor:
     """Edit, merge, and diff checkpoint metadata."""
 
-    def __init__(self, metadata: CheckpointMetadata | dict | None = None) -> None:
+    def __init__(self, metadata: CheckpointMetadata | dict[str, Any] | None = None) -> None:
         if metadata is None:
             self._meta = CheckpointMetadata()
         elif isinstance(metadata, dict):
@@ -243,7 +243,7 @@ def extract_metadata_from_path(path: str) -> CheckpointMetadata:
     return meta
 
 
-def format_metadata_report(metadata: CheckpointMetadata | MetadataEditor | dict) -> str:
+def format_metadata_report(metadata: CheckpointMetadata | MetadataEditor | dict[str, Any]) -> str:
     """Format a human-readable metadata report."""
     if isinstance(metadata, MetadataEditor):
         d = metadata.to_dict()
