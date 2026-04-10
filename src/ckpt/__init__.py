@@ -29,6 +29,7 @@ from ckpt.estimator import (
     estimate_reduction,
     format_estimation,
 )
+from ckpt.gguf import GGUFInfo, format_gguf_info, inspect_gguf, parse_gguf
 from ckpt.merge import find_lora_pairs, merge_lora_state_dicts
 from ckpt.stats import CheckpointStats, TensorStats, stats_from_info
 from ckpt.validate import ValidationIssue, ValidationResult, validate
@@ -79,4 +80,9 @@ __all__ = [
     "estimate_reduction",
     "estimate_quantized_size",
     "format_estimation",
+    # GGUF
+    "GGUFInfo",
+    "parse_gguf",
+    "inspect_gguf",
+    "format_gguf_info",
 ]
