@@ -30,7 +30,20 @@ from ckpt.estimator import (
     format_estimation,
 )
 from ckpt.gguf import GGUFInfo, format_gguf_info, inspect_gguf, parse_gguf
+from ckpt.convert import (
+    ConversionConfig,
+    ConversionFormat,
+    ConversionResult,
+    FormatConverter,
+    convert_checkpoint,
+)
 from ckpt.merge import find_lora_pairs, merge_lora_state_dicts
+from ckpt.metadata import (
+    CheckpointMetadata,
+    MetadataEditor,
+    extract_metadata_from_path,
+    format_metadata_report,
+)
 from ckpt.stats import CheckpointStats, TensorStats, stats_from_info
 from ckpt.validate import ValidationIssue, ValidationResult, validate
 
@@ -80,9 +93,20 @@ __all__ = [
     "estimate_reduction",
     "estimate_quantized_size",
     "format_estimation",
+    # Convert
+    "ConversionConfig",
+    "ConversionFormat",
+    "ConversionResult",
+    "FormatConverter",
+    "convert_checkpoint",
     # GGUF
     "GGUFInfo",
     "parse_gguf",
     "inspect_gguf",
     "format_gguf_info",
+    # Metadata
+    "CheckpointMetadata",
+    "MetadataEditor",
+    "extract_metadata_from_path",
+    "format_metadata_report",
 ]
